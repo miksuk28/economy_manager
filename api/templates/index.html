@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Economy</title>
+</head>
+<body>
+    <h1>My Receipts</h1>
+    {% for receipt in receipts %}
+        <h2>{{ receipt["store"] }} - {{ receipt["created"] }}</h2>
+        <ul>
+            {% for product in receipt["products"] %}
+                <li>{{ product["item"] }} - {{ product['price'] }} Kr - Quantity: {{ product["quantity"] }}</li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+</body>
+</html>
