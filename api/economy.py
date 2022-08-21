@@ -122,7 +122,7 @@ class EconomyManager(DatabaseWrapper):
         for i, item in enumerate(items):
             if item["receipt_id"] == id:
                 new_list.append(items.pop(i))
-
+        print(len(new_list))
         return new_list
 
 
@@ -144,8 +144,6 @@ class EconomyManager(DatabaseWrapper):
             results[i]["total"] = total
 
         return results
-
-
 
 
     def get_all_receipts(self):
