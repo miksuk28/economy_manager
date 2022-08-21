@@ -135,6 +135,19 @@ class EconomyManager(DatabaseWrapper):
         return receipts
 
 
+    def _calc_totals(self, results):
+        for i, receipt in enumerate(results):
+            total = 0
+            for products in receipt["products"]:
+                total += products.get("total", 0)
+
+            results[i]["total"] = total
+
+        return results
+
+
+
+
     def get_all_receipts(self):
         cur = self.conn.cursor()
         cur.execute("SELECT * FROM receipts")
@@ -150,5 +163,6 @@ class EconomyManager(DatabaseWrapper):
         )
         items = self._list_and_dictify(cur.fetchall())
         full_list = self._create_full(receipts, items)
+        full_list = self._calc_totals(full_list)
 
         return full_list

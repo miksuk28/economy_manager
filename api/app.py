@@ -4,6 +4,8 @@ from economy import EconomyManager
 import json_schemas as schemas
 import eco_exceptions as exc_eco
 
+from pprint import pprint
+
 
 app = Flask(__name__)
 app.config["JSON_SORT_KEYS"] = False
@@ -19,7 +21,7 @@ def index():
 @json_validator(schemas.create_receipt)
 def create_receipt():
     data = request.get_json()
-
+    pprint(data)
     id = eco.create_receipt(
         items=data["products"],
         store=data.get("store"),
