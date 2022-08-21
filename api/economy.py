@@ -125,14 +125,29 @@ class EconomyManager(DatabaseWrapper):
         print(len(new_list))
         return new_list
 
-
-    def _create_full(self, receipts, items):
+    
+    def _create_full_old(self, receipts, items):
         '''Creates a full dictionary with the items'''
         for i, receipt in enumerate(receipts):
             new_list = self._group_by_id(receipt["id"], items)
             receipts[i]["products"] = new_list
 
         return receipts
+
+
+    def _create_full(self, receipts, items):
+        index = {}
+        # Build index and add products list
+        for i, receipt in enumerate(receipts):
+            receipts[i]["products"] = []
+            index[receipt["id"]] = i
+
+        # Match items and receipts by their id
+        for i, item in enumerate(items):
+            receipts[index[item["receipt_id"]]]["products"].append(item)
+
+        return receipts
+
 
 
     def _calc_totals(self, results):
