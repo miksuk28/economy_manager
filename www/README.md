@@ -1,4 +1,4 @@
-# www
+# Economy Manager Frontend
 
 ## Project setup
 ```
