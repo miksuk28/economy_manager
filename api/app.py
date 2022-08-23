@@ -35,7 +35,9 @@ def create_receipt():
 
 @app.route("/receipts", methods=["GET"])
 def get_all_receipts():
-    return jsonify(eco.get_all_receipts()), 200
+    response = jsonify(eco.get_all_receipts())
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    return response, 200
     
 
 
