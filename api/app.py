@@ -30,7 +30,12 @@ def create_receipt():
         data["products"][i]["receipt_id"] = id
 
 
-    return jsonify({"message": f"Receipt created with id {id}", "id": id, "data": data}), 201
+    #return jsonify({"message": f"Receipt created with id {id}", "id": id, "data": data}), 201
+
+    response = jsonify({"message": f"Receipt created with id {id}", "id": id, "data": data})
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = ("POST", "OPTIONS", "GET")
+    return response, 200
 
 
 @app.route("/receipts", methods=["GET"])

@@ -5,14 +5,14 @@
       <div class="field">
         <label class="label">Store</label>
         <div class="control">
-          <input v-model="newProduct.store" type="text" class="input">
+          <input v-model="store" type="text" class="input">
         </div>
       </div>
 
       <div class="field">
         <label class="label">Product</label>
         <div class="control">
-          <input v-model="newProduct.product" type="text" class="input">
+          <input v-model="newProduct.product" required type="text" class="input">
         </div>
       </div>
 
@@ -47,12 +47,12 @@
 
       </div>
 
-      <button @click="addProducts" class="button is-fullwidth">Add Product{{ multipleOrNot }}</button>
+      <button @click="addProducts" class="has-background-info button has-text-white is-fullwidth">Add Product{{ multipleOrNot }}</button>
     
       <div v-if="products.length > 0">
         <hr>
 
-        <table v-for="product in products" :key="product.product" class="table is-hoverable is-fullwidth">
+        <table v-for="(product, index) in products" :key="index" class="table is-hoverable is-fullwidth">
           <thead>
             <tr>
               <th>Product</th>
@@ -67,12 +67,13 @@
               <td>{{ product.product }}</td>
               <td>{{ product.price }} kr</td>
               <td>{{ product.quantity }}</td>
-              <td>{{ product.total }}</td>
-              <td><span style="cursor: pointer;" class="icon is-pulled-right"><i class="fa fa-times"></i></span></td>
+              <td>{{ product.total }} kr</td>
+              <td><span @click="deleteProduct(index)" style="cursor: pointer;" class="icon is-pulled-right"><i class="fa fa-times"></i></span></td>
             </tr>
           </tbody>
         </table>
 
+        <button @click="saveReceipt" class="mt-3 has-background-primary has-text-white button is-fullwidth">Save Receipt</button>
       </div>
 
     </div>  
@@ -81,23 +82,40 @@
 </template>
 
 <script>
+import axios from "axios"
+
 export default {
     name: "NewReceipt",
     data() {
       return {
         newProduct: {
-          store: null,
           product: "",
           category: null,
           price: null,
           quantity: 1
         },
-
+        store: null,
         products: []
       }
     },
 
     methods: {
+      saveReceipt() {
+        const receiptObject = {
+          "store": this.store,
+          "products": this.products
+        }
+
+        axios.post("http://localhost:5000/receipt", receiptObject)
+          .then((response) => {
+            console.log(response.data)
+            router.push("/receipts")
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      },
+
       resetNewProduct() {
         this.newProduct.product = "",
         this.newProduct.category = null,
@@ -105,21 +123,62 @@ export default {
         this.newProduct.quantity = 1
       },
 
+      hasProducts() {
+        if (this.products.length !== 0) {
+          return true
+        }
+
+        return false
+      },
+
+      checkCollision(name) {
+        for (let i = 0; i < this.products.length; i++) {
+          if (this.products[i].product === name) {
+            return true
+          } 
+        }
+
+        return false
+      },
+
+      deleteProduct(index) {
+        this.products.splice(index, 1)
+      },
+
       addProducts() {
+        console.log(this.newProduct)
+        console.log(this.newProduct.price)
+
         if (this.newProduct.product === "") {
           alert("Product name cannot be empty")
           return
-        } else if (isNaN(this.newProduct.product || this.newProduct.price !== 0)) {
+        } else if (isNaN(this.newProduct.price) || this.newProduct.price === 0 || this.newProduct.price == null || this.newProduct.price === "") {
           alert("Price cannot be zero")
           return
-        } else if (this.newProduct.quantity === 0) {
+        } else if (isNaN(this.newProduct.quantity) || this.newProduct.quantity === 0 || this.newProduct.quantity == null || this.newProduct.quantity === "") {
           alert("Quantity cannot be zero")
+          return
+        } else if (this.newProduct.price < 0 || this.newProduct.quantity < 0) {
+          alert("Quantity or Price cannot be less than zero")
           return
         }
 
-        this.products.push(this.newProduct)
+        if (this.checkCollision(this.newProduct.product)) {
+          alert("Product with this name already exists in receipt")
+          return 
+        }
+
+        const productObject = {
+          category: this.newProduct.category,
+          price:    this.newProduct.price,
+          product:  this.newProduct.product,
+          quantity: this.newProduct.quantity,
+          total:    this.newProduct.quantity * this.newProduct.price
+        }
+
+        this.products.push(productObject)
         this.resetNewProduct()
-        console.log(this.products)
+        //console.log(this.products)
       }
     },
 
