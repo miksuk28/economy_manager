@@ -29,7 +29,6 @@ def create_receipt():
     for i, product in enumerate(data["products"]):
         data["products"][i]["receipt_id"] = id
 
-
     #return jsonify({"message": f"Receipt created with id {id}", "id": id, "data": data}), 201
 
     response = jsonify({"message": f"Receipt created with id {id}", "id": id, "data": data})

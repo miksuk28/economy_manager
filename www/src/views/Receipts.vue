@@ -11,7 +11,10 @@
         </div>
       </div>
 
-      <div v-for="receipt in receipts" :key="receipt.id" class="card mb-3">
+      <button @click="this.$router.push('/receipts/new')" class="mb-5 has-background-primary button has-text-white is-fullwidth">Add Receipt</button>
+
+
+      <div v-for="(receipt, index) in receipts" :key="receipt.id" class="card mb-3">
         <div class="card-content">
           <div class="columns">
 
@@ -27,7 +30,7 @@
 
                 <div class="column">
                   <p class="has-text-weight-bold">Store</p>
-                  <p class="">{{ receipts.store || "—"}}</p>
+                  <p class="">{{ receipt.store || "—"}}</p>
                 </div>
 
 
@@ -76,13 +79,11 @@
                 <p><span class="has-text-weight-bold">Total</span>: {{ product.total }} kr</p>
               </div>
 
-              <div class="column">
-                <button class="card-header-icon is-pulled-right">
-                  <span class="icon">
-                    <i class="fa fa-close"></i>
-                  </span>
-                </button>
-              </div>
+              
+            </div>
+
+            <div class="columns">
+              <button @click="deleteReceipt(receipt.id, index)" class="mt-5 has-background-danger button has-text-white is-fullwidth">Delete</button>
             </div>
           </div>
         </div>
@@ -110,7 +111,7 @@ export default {
 
   methods: {
     getReceipts() {
-      axios.get("http://localhost:5000/receipts")
+      axios.get("http://economy/api/receipts")
         .then((response) => {
           console.log(response.data)
           this.receipts = response.data
@@ -119,6 +120,23 @@ export default {
         .catch((error) => {
           console.log(error)
         })
+    },
+
+    removeReceiptLocal(index, id) {
+      this.receipts.splice(index, 1)
+    },
+
+    deleteReceipt(id, index) {
+      console.log(id)
+      axios.delete("http://economy/api/receipt/" + id)
+        .then((reponse) => {
+          console.log(reponse.data)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+
+      this.removeReceiptLocal(index)
     },
 
     resetProductsView() {
@@ -141,7 +159,7 @@ export default {
         total += receipt.total
       });
 
-      return total
+      return Math.round(total * 100) /100
     }
   }
 }

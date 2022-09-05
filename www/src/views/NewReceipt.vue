@@ -12,7 +12,7 @@
       <div class="field">
         <label class="label">Product</label>
         <div class="control">
-          <input v-model="newProduct.product" required type="text" class="input">
+          <input v-model="newProduct.item" required type="text" class="input">
         </div>
       </div>
 
@@ -64,7 +64,7 @@
           </thead>
           <tbody>
             <tr>
-              <td>{{ product.product }}</td>
+              <td>{{ product.item }}</td>
               <td>{{ product.price }} kr</td>
               <td>{{ product.quantity }}</td>
               <td>{{ product.total }} kr</td>
@@ -83,13 +83,15 @@
 
 <script>
 import axios from "axios"
+axios.defaults.headers.common['Content-Type'] = "application/json"
+
 
 export default {
     name: "NewReceipt",
     data() {
       return {
         newProduct: {
-          product: "",
+          item: "",
           category: null,
           price: null,
           quantity: 1
@@ -101,15 +103,21 @@ export default {
 
     methods: {
       saveReceipt() {
-        const receiptObject = {
-          "store": this.store,
-          "products": this.products
+        const receiptObject = JSON.stringify(
+          {
+            store: this.store,
+            products: this.products
+          }
+        )
+
+        const headers = {
+          "Content-Type": "application/json"
         }
 
-        axios.post("http://localhost:5000/receipt", receiptObject)
+        axios.post("http://economy/api/receipt", receiptObject, {headers: headers})
           .then((response) => {
             console.log(response.data)
-            router.push("/receipts")
+            this.$router.push("/receipts")
           })
           .catch((error) => {
             console.log(error)
@@ -117,7 +125,7 @@ export default {
       },
 
       resetNewProduct() {
-        this.newProduct.product = "",
+        this.newProduct.item = "",
         this.newProduct.category = null,
         this.newProduct.price = null,
         this.newProduct.quantity = 1
@@ -133,7 +141,7 @@ export default {
 
       checkCollision(name) {
         for (let i = 0; i < this.products.length; i++) {
-          if (this.products[i].product === name) {
+          if (this.products[i].item === name) {
             return true
           } 
         }
@@ -163,7 +171,7 @@ export default {
           return
         }
 
-        if (this.checkCollision(this.newProduct.product)) {
+        if (this.checkCollision(this.newProduct.item)) {
           alert("Product with this name already exists in receipt")
           return 
         }
@@ -171,7 +179,7 @@ export default {
         const productObject = {
           category: this.newProduct.category,
           price:    this.newProduct.price,
-          product:  this.newProduct.product,
+          item:  this.newProduct.item,
           quantity: this.newProduct.quantity,
           total:    this.newProduct.quantity * this.newProduct.price
         }
@@ -184,7 +192,7 @@ export default {
 
     computed: {
       getTotal() {
-        var total = this.newProduct.product * this.newProduct.quantity
+        var total = this.newProduct.item * this.newProduct.quantity
         return `${this.newProduct.price * this.newProduct.quantity} kr`
       },
 
