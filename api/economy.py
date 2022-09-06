@@ -1,10 +1,12 @@
 from db import DatabaseWrapper
 from config import economy_config as config
+from categories import Categories
 import eco_exceptions as exc
 
 class EconomyManager(DatabaseWrapper):
     def __init__(self):
         DatabaseWrapper.__init__(self)
+        self.categories = Categories()
         self._currency = config["currency"]
 
 
@@ -24,13 +26,16 @@ class EconomyManager(DatabaseWrapper):
 
 
     def create_receipt(self, items, store=None, comment=None, date=None, category=None):
+        if category is not None:
+            category_id = self.categories.create_category(category)[0]
+
         cur = self.conn.cursor()
         cur.execute(
             '''
             INSERT INTO receipts (store,comment,timestamp,category)
             VALUES (?,?,?,?)
             ''',
-            (store, comment, date, category)
+            (store, comment, date, category_id)
         )
         receipt_id = cur.lastrowid
 
