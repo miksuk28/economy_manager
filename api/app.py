@@ -1,15 +1,15 @@
 from flask import Flask, jsonify, request, render_template
 from wrappers import json_validator
 from economy import EconomyManager
+from categories import Categories
 import json_schemas as schemas
 import eco_exceptions as exc_eco
-
-from pprint import pprint
 
 
 app = Flask(__name__)
 app.config["JSON_SORT_KEYS"] = False
 eco = EconomyManager()
+categories = Categories()
 
 # TESTING
 @app.route("/", methods=["GET"])
@@ -25,6 +25,7 @@ def create_receipt():
         items=data["products"],
         store=data.get("store"),
         comment=data.get("comment"),
+        category=data.get("category")
     )
     for i, product in enumerate(data["products"]):
         data["products"][i]["receipt_id"] = id
@@ -57,6 +58,26 @@ def delete_receipt(id):
 
     except exc_eco.ReceiptDoesNotExist:
         return jsonify({"error": f"Receipt with id {id} does not exist", "id": id}), 404
+
+
+
+@app.route("/categories", methods=["GET"])
+def get_categories():
+    cats = categories.get_categories()
+    return jsonify(cats)
+
+
+@app.route("/category/<category>", methods=["POST"])
+def new_category(category):
+    id, exists = categories.create_category(category)
+
+    if exists:
+        return jsonify({"id": id, "category": category, "message": "Category already exists"}), 200
+
+    return jsonify({"id": id, "category": category, "message": "Category created"}), 201
+    
+
+
 
 
 if __name__ == "__main__":

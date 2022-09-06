@@ -4,6 +4,7 @@ create_receipt = {
         "store":        {"type": "string"},
         "comment":      {"type": "string"},
         "timestamp":    {"type": "integer"},
+        "category":     {"type": "string"},
         "products": {
             "type": "array",
             "items": {

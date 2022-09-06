@@ -111,7 +111,7 @@ export default {
 
   methods: {
     getReceipts() {
-      axios.get("http://economy/api/receipts")
+      axios.get("/api/receipts")
         .then((response) => {
           console.log(response.data)
           this.receipts = response.data
@@ -128,7 +128,7 @@ export default {
 
     deleteReceipt(id, index) {
       console.log(id)
-      axios.delete("http://economy/api/receipt/" + id)
+      axios.delete("/api/receipt/" + id)
         .then((reponse) => {
           console.log(reponse.data)
         })

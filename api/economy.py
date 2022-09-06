@@ -23,14 +23,14 @@ class EconomyManager(DatabaseWrapper):
         return new_list
 
 
-    def create_receipt(self, items, store=None, comment=None, date=None):
+    def create_receipt(self, items, store=None, comment=None, date=None, category=None):
         cur = self.conn.cursor()
         cur.execute(
             '''
-            INSERT INTO receipts (store,comment,timestamp)
-            VALUES (?,?,?)
+            INSERT INTO receipts (store,comment,timestamp,category)
+            VALUES (?,?,?,?)
             ''',
-            (store, comment, date,)
+            (store, comment, date, category)
         )
         receipt_id = cur.lastrowid
 
@@ -163,15 +163,22 @@ class EconomyManager(DatabaseWrapper):
 
     def get_all_receipts(self):
         cur = self.conn.cursor()
-        cur.execute("SELECT * FROM receipts")
+        cur.execute(
+            '''
+            SELECT receipts.id, store, comment, timestamp, created, categories.id AS category_id, categories.name AS category
+            FROM receipts
+            LEFT JOIN categories ON receipts.category=categories.id
+            '''
+        )
         receipts = self._list_and_dictify(items=cur.fetchall())
 
         cur.execute(
             '''
             SELECT receipts.id AS receipt_id,
-                store, item, price, quantity, price*quantity AS total
+                store, item, price, quantity, price*quantity AS total, categories.name AS category
             FROM receipts_junction
             JOIN receipts ON receipt_id=receipts.id
+            LEFT JOIN categories ON receipts.category=categories.id
             '''
         )
         items = self._list_and_dictify(cur.fetchall())

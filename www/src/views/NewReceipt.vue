@@ -114,7 +114,7 @@ export default {
           "Content-Type": "application/json"
         }
 
-        axios.post("http://economy/api/receipt", receiptObject, {headers: headers})
+        axios.post("/api/receipt", receiptObject, {headers: headers})
           .then((response) => {
             console.log(response.data)
             this.$router.push("/receipts")

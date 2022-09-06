@@ -5,7 +5,10 @@ CREATE TABLE IF NOT EXISTS receipts (
 	store TEXT,
 	comment TEXT,
 	timestamp DATETIME,
-	created DATETIME DEFAULT CURRENT_TIMESTAMP
+	created DATETIME DEFAULT CURRENT_TIMESTAMP,
+	category INTEGER,
+
+	FOREIGN KEY (category) REFERENCES categories (id)
 );
 
 CREATE TABLE IF NOT EXISTS receipts_junction (
@@ -19,3 +22,7 @@ CREATE TABLE IF NOT EXISTS receipts_junction (
 	FOREIGN KEY (receipt_id) REFERENCES receipts (id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS categories (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	name TEXT NOT NULL UNIQUE
+);
