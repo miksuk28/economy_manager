@@ -6,8 +6,9 @@ import NewReceipt from "../views/NewReceipt.vue"
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: HomeView
+    redirect: to => {
+      return { path: "/receipts" }
+    }
   },
   {
     path: '/about',
@@ -30,7 +31,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(),
   routes
 })
 
