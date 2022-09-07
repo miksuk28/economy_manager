@@ -46,7 +46,7 @@
 
                 <div class="column">
                   <p class="has-text-weight-bold">Category</p>
-                  <p>—</p>
+                  <p>{{ receipt.category || "—"}}</p>
                 </div>
               </div>
             </div>
@@ -82,9 +82,10 @@
               
             </div>
 
-            <div class="columns">
-              <button @click="deleteReceipt(receipt.id, index)" class="mt-5 has-background-danger button has-text-white is-fullwidth">Delete</button>
-            </div>
+
+          </div>
+          <div class="columns">
+            <button @click="deleteReceipt(receipt.id, index)" class="mt-5 has-background-danger button has-text-white is-fullwidth">Delete</button>
           </div>
         </div>
         
