@@ -2,27 +2,34 @@
   <div class="section">
     <div class="container">
 
-      <div class="field">
-        <label class="label">Store</label>
-        <div class="control">
-          <input v-model="store" type="text" class="input">
-        </div>
-      </div>
-
-      <div class="field">
-        <label class="label">Category</label>
-        <div class="dropdown">
-          <div class="dropdown-trigger">
-            <button class="button" aria-controls="dropdown-menu">
-              <span>Dropdown</span>
-              <span class="icon is-small">
-                <i class="fa"></i>
-              </span>
-            </button>
+      <div class="columns">
+        <div class="column">
+          <div class="field">
+            <label class="label">Store</label>
+            <div class="control">
+              <input v-model="store" type="text" class="input">
+            </div>
           </div>
+        </div>
 
+        <div class="column">
+          <label class="label">Category</label>
+
+          <div class="field has-addons">
+            <div class="control is-expanded">
+              <div class="select is-fullwidth">
+                <select name="country">
+                  <option value=""></option>
+                  <option value="Argentina">Argentina</option>
+                  <option value="Bolivia">Bolivia</option>
+
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+
 
       <div class="field">
         <label class="label">Product</label>
@@ -98,7 +105,7 @@
 
 <script>
 import axios from "axios"
-axios.defaults.headers.common['Content-Type'] = "application/json"
+//axios.defaults.headers.common['Content-Type'] = "application/json"
 
 
 export default {
@@ -113,7 +120,8 @@ export default {
         },
         store: null,
         products: [],
-        categories: []
+        categories: [],
+        categoryDropdown: false
       }
     },
 
