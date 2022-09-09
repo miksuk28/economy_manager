@@ -14,81 +14,77 @@
       <button @click="this.$router.push('/receipts/new')" class="mb-5 has-background-primary button has-text-white is-fullwidth">Add Receipt</button>
 
 
-      <div v-for="(receipt, index) in receipts" :key="receipt.id" class="card mb-3">
-        <div class="card-content">
-          <div class="columns">
-
-            <div class="column">
-              <div class="columns">
-                <div class="column">
-                  <button @click="receipt.viewProducts = !receipt.viewProducts" class="card-header-icon">
-                    <span class="icon">
-                      <i :class="chevronClass(receipt.viewProducts)"></i>
-                    </span>
-                  </button>
-                </div>
-
-                <div class="column">
-                  <p class="has-text-weight-bold">Store</p>
-                  <p class="">{{ receipt.store || "—"}}</p>
-                </div>
-
-
-              </div>
-            </div>
-
-            <div class="column">
-              <div class="columns">
-                <div class="column">
-                  <p class="has-text-weight-bold">Quantity</p>
-                  <p class="">{{ receipt.products.length }}</p>
-                </div>
-
-                <div class="column">
-                  <p class="has-text-weight-bold">Category</p>
-                  <p>{{ receipt.category || "—"}}</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="column has-text-right">
-              <p class="has-text-weight-bold">Total</p>
-              <p class="">{{ receipt.total }} kr</p>
-            </div>
-      
-          </div>
-        </div>
-
-        <div class="section pt-0" v-if="receipt.viewProducts">
-          <hr>
-          <div v-for="product in receipt.products" :key="product.receipt_id" class="card-content">
+      <div v-if="receipts.length !== 0">
+        <div v-for="(receipt, index) in receipts" :key="receipt.id" class="card mb-3">
+          <div class="card-content">
             <div class="columns">
               <div class="column">
-                <p>{{ product.item }}</p>
+                <div class="columns">
+                  <div class="column">
+                    <button @click="receipt.viewProducts = !receipt.viewProducts" class="card-header-icon">
+                      <span class="icon">
+                        <i :class="chevronClass(receipt.viewProducts)"></i>
+                      </span>
+                    </button>
+                  </div>
+                  <div class="column">
+                    <p class="has-text-weight-bold">Store</p>
+                    <p class="">{{ receipt.store || "—"}}</p>
+                  </div>
+                </div>
               </div>
-
               <div class="column">
-                <p><span class="has-text-weight-bold">Quantity</span>: {{ product.quantity }}</p>
+                <div class="columns">
+                  <div class="column">
+                    <p class="has-text-weight-bold">Quantity</p>
+                    <p class="">{{ receipt.products.length }}</p>
+                  </div>
+                  <div class="column">
+                    <p class="has-text-weight-bold">Category</p>
+                    <p>{{ receipt.category || "—"}}</p>
+                  </div>
+                </div>
               </div>
-
-              <div class="column">
-                <p><span class="has-text-weight-bold">Price</span>: {{ product.price }} kr</p>
+              <div class="column has-text-right">
+                <p class="has-text-weight-bold">Total</p>
+                <p class="">{{ receipt.total }} kr</p>
               </div>
-
-              <div class="column">
-                <p><span class="has-text-weight-bold">Total</span>: {{ product.total }} kr</p>
-              </div>
-
-              
+        
             </div>
-
-
           </div>
-          <div class="columns">
-            <button @click="deleteReceipt(receipt.id, index)" class="mt-5 has-background-danger button has-text-white is-fullwidth">Delete</button>
+          <div class="section pt-0" v-if="receipt.viewProducts">
+            <hr>
+            <div v-for="product in receipt.products" :key="product.receipt_id" class="card-content">
+              <div class="columns">
+                <div class="column">
+                  <p>{{ product.item }}</p>
+                </div>
+                <div class="column">
+                  <p><span class="has-text-weight-bold">Quantity</span>: {{ product.quantity }}</p>
+                </div>
+                <div class="column">
+                  <p><span class="has-text-weight-bold">Price</span>: {{ product.price }} kr</p>
+                </div>
+                <div class="column">
+                  <p><span class="has-text-weight-bold">Total</span>: {{ product.total }} kr</p>
+                </div>
+        
+              </div>
+            </div>
+            <div class="columns">
+              <button @click="deleteReceipt(receipt.id, index)" class="mt-5 has-background-danger button has-text-white is-fullwidth">Delete</button>
+            </div>
+          </div>
+        
+        </div>
+      </div>
+      
+      <div v-else>
+        <div class="section">
+          <div class="container">
+            <h1 class="is-size-4 has-text-centered is-italic">No Receipts!</h1>
           </div>
         </div>
-        
       </div>
       
     </div>

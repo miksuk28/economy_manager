@@ -3,16 +3,20 @@
 
     <div v-if="viewCategoryModal" class="modal is-active">
       <div class="modal-background"></div>
-      <div class="modal-card">
-        <header class="modal-card-head">
-          <div class="modal-card-title">Create New Category</div>
+      <div class="card">
+        <header class="card-header">
+          <p class="card-header-title">
+            Add New Category
+          </p>
         </header>
-        <section class="modal-card-body">
-          pass
-        </section>
-        <footer class="modal-card-foot">
-          <a href="#" class="card-footer-item">Add</a>
-          <a @click="this.viewCategoryModal = false" class="card-footer-item">Cancel</a>
+        <div class="card-content">
+          <div class="content">
+            <input v-model="newCategory" class="input" type="text" placeholder="Category Name">
+          </div>
+        </div>
+        <footer class="card-footer">
+          <a @click="createCategory(this.newCategory)" class="card-footer-item">Save</a>
+          <a @click="this.viewCategoryModal = false; this.newCategory = '';" class="card-footer-item has-text-danger">Cancel</a>
         </footer>
       </div>
     </div>
@@ -39,10 +43,9 @@
             </div>
             <div class="control is-expanded">
               <div class="select is-fullwidth">
-                <select name="country">
+                <select v-model="category" name="country">
                   <option value=""></option>
-                  <option value="Argentina">Ubrukelig faenskap eg ikkje trenger</option>
-                  <option value="Bolivia">Bolivia</option>
+                  <option v-for="category in categories" :key="category.id" :value="category.name">{{ category.name }}</option>
 
                 </select>
               </div>
@@ -142,8 +145,14 @@ export default {
         store: null,
         products: [],
         categories: [],
+        category: null,
+        newCategory: "",
         viewCategoryModal: false
       }
+    },
+
+    mounted() {
+      this.getCategories()
     },
 
     methods: {
@@ -151,6 +160,7 @@ export default {
         const receiptObject = JSON.stringify(
           {
             store: this.store,
+            category: this.category || "",
             products: this.products
           }
         )
@@ -173,6 +183,30 @@ export default {
         axios.get("/api/categories")
           .then((response) => {
             this.categories = response.data
+            console.log(this.categories)
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      },
+
+      createCategory(name) {
+        if (name === "" || name === null) {
+          return
+        }
+
+        axios.post(`/api/category/${name}`)
+          .then((response) => {
+            const catObject = {
+              id: response.data.id,
+              name: name
+            }
+
+            this.viewCategoryModal = false
+            // insert into categories object
+            this.categories.splice(0, 0, catObject)
+            this.newCategory = ""
+            this.category = name
           })
           .catch((error) => {
             console.log(error)
