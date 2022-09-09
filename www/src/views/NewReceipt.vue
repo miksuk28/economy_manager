@@ -1,5 +1,23 @@
 <template>
   <div class="section">
+
+    <div v-if="viewCategoryModal" class="modal is-active">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <div class="modal-card-title">Create New Category</div>
+        </header>
+        <section class="modal-card-body">
+          pass
+        </section>
+        <footer class="modal-card-foot">
+          <a href="#" class="card-footer-item">Add</a>
+          <a @click="this.viewCategoryModal = false" class="card-footer-item">Cancel</a>
+        </footer>
+      </div>
+    </div>
+
+    
     <div class="container">
 
       <div class="columns">
@@ -16,11 +34,14 @@
           <label class="label">Category</label>
 
           <div class="field has-addons">
+            <div class="control">
+                <button @click="this.viewCategoryModal = !this.viewCategoryModal" class="button is-info"><span class="fa fa-plus"></span></button>
+            </div>
             <div class="control is-expanded">
               <div class="select is-fullwidth">
                 <select name="country">
                   <option value=""></option>
-                  <option value="Argentina">Argentina</option>
+                  <option value="Argentina">Ubrukelig faenskap eg ikkje trenger</option>
                   <option value="Bolivia">Bolivia</option>
 
                 </select>
@@ -121,7 +142,7 @@ export default {
         store: null,
         products: [],
         categories: [],
-        categoryDropdown: false
+        viewCategoryModal: false
       }
     },
 
