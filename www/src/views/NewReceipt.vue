@@ -10,6 +10,21 @@
       </div>
 
       <div class="field">
+        <label class="label">Category</label>
+        <div class="dropdown">
+          <div class="dropdown-trigger">
+            <button class="button" aria-controls="dropdown-menu">
+              <span>Dropdown</span>
+              <span class="icon is-small">
+                <i class="fa"></i>
+              </span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="field">
         <label class="label">Product</label>
         <div class="control">
           <input v-model="newProduct.item" required type="text" class="input">
@@ -97,7 +112,8 @@ export default {
           quantity: 1
         },
         store: null,
-        products: []
+        products: [],
+        categories: []
       }
     },
 
@@ -118,6 +134,16 @@ export default {
           .then((response) => {
             console.log(response.data)
             this.$router.push("/receipts")
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      },
+
+      getCategories() {
+        axios.get("/api/categories")
+          .then((response) => {
+            this.categories = response.data
           })
           .catch((error) => {
             console.log(error)

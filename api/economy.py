@@ -28,6 +28,8 @@ class EconomyManager(DatabaseWrapper):
     def create_receipt(self, items, store=None, comment=None, date=None, category=None):
         if category is not None:
             category_id = self.categories.create_category(category)[0]
+        else:
+            category_id = None
 
         cur = self.conn.cursor()
         cur.execute(
