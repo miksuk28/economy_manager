@@ -2,12 +2,17 @@ from flask import Flask, jsonify, request, render_template
 from wrappers import json_validator
 from economy import EconomyManager
 from categories import Categories
+# Blueprints
+from auth_blueprint import authentication
+
 import json_schemas as schemas
 import eco_exceptions as exc_eco
 
 
 app = Flask(__name__)
 app.config["JSON_SORT_KEYS"] = False
+app.register_blueprint(authentication, url_prefix="/auth")
+
 eco = EconomyManager()
 categories = Categories()
 
