@@ -56,6 +56,14 @@
 
 
       <div class="field">
+        <label class="label">Date</label>
+        <div class="control">
+          <input type="date" id="start" name="trip-start" min="1970-01-01" max="2022-09-10">
+        </div>
+      </div>
+
+
+      <div class="field">
         <label class="label">Product</label>
         <div class="control">
           <input v-model="newProduct.item" required type="text" class="input">
