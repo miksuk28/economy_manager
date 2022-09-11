@@ -1,6 +1,8 @@
 <template>
   <div class="section">
 
+    <WarningModal message="cock" />
+
     <div v-if="viewCategoryModal" class="modal is-active">
       <div class="modal-background"></div>
       <div class="card">
@@ -43,7 +45,7 @@
             </div>
             <div class="control is-expanded">
               <div class="select is-fullwidth">
-                <select v-model="category" name="country">
+                <select v-model="category">
                   <option value=""></option>
                   <option v-for="category in categories" :key="category.id" :value="category.name">{{ category.name }}</option>
 
@@ -54,11 +56,10 @@
         </div>
       </div>
 
-
       <div class="field">
         <label class="label">Date</label>
-        <div class="control">
-          <input type="date" id="start" name="trip-start" min="1970-01-01" max="2022-09-10">
+        <div class="control is-expanded">
+          <input v-model="date" min="1970-01-01" max="2022-09-11" type="date" class="input">
         </div>
       </div>
 
@@ -137,11 +138,16 @@
 
 <script>
 import axios from "axios"
+import WarningModal from "../components/WarningModal.vue"
 //axios.defaults.headers.common['Content-Type'] = "application/json"
 
 
 export default {
     name: "NewReceipt",
+    componets: {
+      WarningModal
+    },
+
     data() {
       return {
         newProduct: {
@@ -155,7 +161,8 @@ export default {
         categories: [],
         category: null,
         newCategory: "",
-        viewCategoryModal: false
+        viewCategoryModal: false,
+        date: ""
       }
     },
 
