@@ -42,3 +42,11 @@ CREATE TABLE IF NOT EXISTS passwords (
 	
 	FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS sessions (
+	user_id INTEGER NOT NULL,
+	token TEXT NOT NULL UNIQUE,
+	expiration TEXT NOT NULL,
+	
+	FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);

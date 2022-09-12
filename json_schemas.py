@@ -20,3 +20,15 @@ create_receipt = {
     },
     "required": ["products"]
 }
+
+register_user = {
+    "type": "object",
+    "properties": {
+        "username": {"type": "string"},
+        "password": {"type": "string"},
+        "fname":    {"type": "string"},
+        "lname":    {"type": "string"},
+        "logon_allowed": {"type": "boolean"}
+    },
+    "required": ["username", "password"]
+}

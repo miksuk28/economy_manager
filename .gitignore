@@ -131,3 +131,6 @@ dmypy.json
 # Databases
 *.db
 *.sqlite3
+
+# Testing
+*.ipynb

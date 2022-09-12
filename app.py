@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, render_template
-from wrappers import json_validator
+from wrappers import json_validator, authenticate
 from economy import EconomyManager
 from categories import Categories
 # Blueprints
@@ -18,13 +18,16 @@ categories = Categories()
 
 # TESTING
 @app.route("/", methods=["GET"])
-def index():
+@authenticate()
+def index(session):
+    print(session["username"])
     return render_template("index.html", receipts=eco.get_all_receipts())
 
 
 @app.route("/receipt", methods=["POST"])
+@authenticate()
 @json_validator(schemas.create_receipt)
-def create_receipt():
+def create_receipt(session):
     data = request.get_json()
     id = eco.create_receipt(
         items=data["products"],

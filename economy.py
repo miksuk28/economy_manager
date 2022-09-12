@@ -25,7 +25,7 @@ class EconomyManager(DatabaseWrapper):
         return new_list
 
 
-    def create_receipt(self, items, store=None, comment=None, date=None, category=None):
+    def create_receipt(self, username, items, store=None, comment=None, date=None, category=None):
         if category is not None:
             category_id = self.categories.create_category(category)[0]
         else:
