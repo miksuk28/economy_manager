@@ -1,20 +1,23 @@
 from db import DatabaseWrapper
 from config import economy_config as config
 from categories import Categories
+from auth import Authentication
 import eco_exceptions as exc
+
 
 class EconomyManager(DatabaseWrapper):
     def __init__(self):
         DatabaseWrapper.__init__(self)
         self.categories = Categories()
         self._currency = config["currency"]
+        self._auth = Authentication()
 
-
-    def _create_items_list(self, items, receipt_id):
+    def _create_items_list(self, items, receipt_id, username):
         new_list = []
         for item in items:
             temp_list = [
                 receipt_id,
+                username,
                 item["item"],
                 item["price"],
                 item["quantity"],
@@ -34,33 +37,33 @@ class EconomyManager(DatabaseWrapper):
         cur = self.conn.cursor()
         cur.execute(
             '''
-            INSERT INTO receipts (store,comment,timestamp,category)
-            VALUES (?,?,?,?)
+            INSERT INTO receipts (user_id,store,comment,timestamp,category)
+            VALUES ((SELECT id FROM users WHERE username=?),?,?,?,?)
             ''',
-            (store, comment, date, category_id)
+            (username, store, comment, date, category_id)
         )
         receipt_id = cur.lastrowid
 
         cur.executemany(
             '''
-            INSERT INTO receipts_junction (receipt_id,item,price,quantity,comment)
-            VALUES (?,?,?,?,?)
+            INSERT INTO receipts_junction (receipt_id,user_id,item,price,quantity,comment)
+            VALUES (?,(SELECT id FROM users WHERE username=?),?,?,?,?)
             ''',
-            self._create_items_list(items, receipt_id)
+            self._create_items_list(items, receipt_id, username)
         )
             
         self.conn.commit()
         return receipt_id
 
 
-    def delete_receipt(self, id):
+    def delete_receipt(self, username, id):
         cur = self.conn.cursor()
         cur.execute(
             '''
             DELETE FROM receipts
-            WHERE id=?
+            WHERE id=? AND user_id=(SELECT id FROM users WHERE username=?)
             ''',
-            (id,)
+            (id, username)
         )
         deleted_items = cur.rowcount
         
@@ -71,15 +74,16 @@ class EconomyManager(DatabaseWrapper):
         return deleted_items
 
 
-    def get_receipt_by_id(self, id):
+    def get_receipt_by_id(self, id, username):
         cur = self.conn.cursor()
         cur.execute(
             '''
             SELECT item, comment, price, quantity, price*quantity AS total
             FROM receipts_junction
-            WHERE receipt_id=?
+            JOIN users ON receipts_junction.user_id=users.id
+            WHERE receipt_id=? AND username=?
             ''',
-            (id,)
+            (id, username)
         )
         items = self._list_and_dictify(cur.fetchall())
         
@@ -87,9 +91,10 @@ class EconomyManager(DatabaseWrapper):
             '''
             SELECT store, comment, timestamp, created
             FROM receipts
-            WHERE id=?
+            JOIN users ON receipts.user_id=users.id
+            WHERE receipts.id=? AND username=?
             ''',
-            (id,)
+            (id, username)
         )
         receipt_data = self._list_and_dictify(cur.fetchone(), one=True)
         
@@ -108,12 +113,15 @@ class EconomyManager(DatabaseWrapper):
         return result
 
 
-    def total_spending(self, format=False):
+    def total_spending(self, username, format=False):
         cur = self.conn.cursor()
         cur.execute(
             '''
-            SELECT SUM(quantity * price) AS total FROM receipts_junction
-            '''
+            SELECT SUM(quantity*price) AS total FROM receipts_junction
+            JOIN users ON receipts_junction.user_id=users.id
+            WHERE username=?;
+            ''',
+            (username,)
         )
         result = cur.fetchone()
         # Round to two decimals
@@ -168,14 +176,17 @@ class EconomyManager(DatabaseWrapper):
         return results
 
 
-    def get_all_receipts(self):
+    def get_all_receipts(self, username):
         cur = self.conn.cursor()
         cur.execute(
             '''
             SELECT receipts.id, store, comment, timestamp, created, categories.id AS category_id, categories.name AS category
             FROM receipts
             LEFT JOIN categories ON receipts.category=categories.id
-            '''
+            LEFT JOIN users ON receipts.user_id=users.id
+            WHERE username=?
+            ''',
+            (username,)
         )
         receipts = self._list_and_dictify(items=cur.fetchall())
 
@@ -184,9 +195,13 @@ class EconomyManager(DatabaseWrapper):
             SELECT receipts.id AS receipt_id,
                 store, item, price, quantity, price*quantity AS total, categories.name AS category
             FROM receipts_junction
+
             JOIN receipts ON receipt_id=receipts.id
             LEFT JOIN categories ON receipts.category=categories.id
-            '''
+            JOIN users ON receipts.user_id=users.id
+            WHERE username=?
+            ''',
+            (username,)
         )
         items = self._list_and_dictify(cur.fetchall())
         full_list = self._create_full(receipts, items)

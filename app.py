@@ -47,17 +47,19 @@ def create_receipt(session):
 
 
 @app.route("/receipts", methods=["GET"])
-def get_all_receipts():
-    response = jsonify(eco.get_all_receipts())
+@authenticate()
+def get_all_receipts(session):
+    response = jsonify(eco.get_all_receipts(session["username"]))
     response.headers["Access-Control-Allow-Origin"] = "*"
     return response, 200
     
 
 
 @app.route("/receipt/<int:id>", methods=["DELETE"])
-def delete_receipt(id):
+@authenticate()
+def delete_receipt(id, session):
     try:
-        affected_rows = eco.delete_receipt(id)
+        affected_rows = eco.delete_receipt(session["username"], id)
         return jsonify({
             "message": f"Deleted receipt with id {id}",
             "id": id,
