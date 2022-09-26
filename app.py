@@ -21,7 +21,7 @@ categories = Categories()
 @authenticate()
 def index(session):
     print(session["username"])
-    return render_template("index.html", receipts=eco.get_all_receipts())
+    return render_template("index.html", receipts=eco.get_all_receipts(username=session["username"]))
 
 
 @app.route("/receipt", methods=["POST"])
@@ -40,18 +40,18 @@ def create_receipt(session):
 
     #return jsonify({"message": f"Receipt created with id {id}", "id": id, "data": data}), 201
 
-    response = jsonify({"message": f"Receipt created with id {id}", "id": id, "data": data})
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Methods"] = ("POST", "OPTIONS", "GET")
-    return response, 200
+    #response = jsonify({"message": f"Receipt created with id {id}", "id": id, "data": data})
+    return jsonify({"message": f"Receipt created with id {id}", "id": id, "data": data})
+    
+    #response.headers["Access-Control-Allow-Origin"] = "*"
+    #response.headers["Access-Control-Allow-Methods"] = ("POST", "OPTIONS", "GET")
+    #return response, 200
 
 
 @app.route("/receipts", methods=["GET"])
 @authenticate()
 def get_all_receipts(session):
-    response = jsonify(eco.get_all_receipts(session["username"]))
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    return response, 200
+    return jsonify(eco.get_all_receipts(session["username"])), 200
     
 
 
@@ -82,11 +82,18 @@ def new_category(category):
     id, exists = categories.create_category(category)
 
     if exists:
-        return jsonify({"id": id, "category": category, "message": "Category already exists"}), 200
+        return jsonify({"id": id, "category": category, "message": "Category already exists"}), 409
 
     return jsonify({"id": id, "category": category, "message": "Category created"}), 201
-    
 
+
+@app.errorhandler(405)
+def method_forbidden(e):
+    return jsonify({
+        "error": "Forbidden method",
+        "message": "Invalid method. Please read the documentation for more information",
+        "validMethods": e.valid_methods
+    })
 
 
 
