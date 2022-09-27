@@ -16,6 +16,9 @@ def login():
         session = auth.login(data["username"], data["password"])
         return jsonify(session)
     
+    except exc.UserDoesNotExist:
+        return jsonify({"error": "User does not exist. Please register"}), 404
+
     except exc.IncorrectPassword:
         return jsonify({"error": "Incorrect password. Please try signing in again"}), 403
 

@@ -85,7 +85,7 @@ class Authentication(DatabaseWrapper):
     def login(self, username, password):
         user_info = self.get_user_id(username)
         if user_info is None:
-            raise auth_exc.UserDoesNotExist()(username)
+            raise auth_exc.UserDoesNotExist(username)
         
         elif not user_info["logon_allowed"]:
             raise auth_exc.LoginBlocked(username)
