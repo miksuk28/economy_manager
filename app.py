@@ -30,6 +30,7 @@ def index(session):
 def create_receipt(session):
     data = request.get_json()
     id = eco.create_receipt(
+        username=session["username"],
         items=data["products"],
         store=data.get("store"),
         comment=data.get("comment"),
@@ -72,14 +73,19 @@ def delete_receipt(id, session):
 
 
 @app.route("/categories", methods=["GET"])
-def get_categories():
-    cats = categories.get_categories()
+@authenticate()
+def get_categories(session):
+    cats = categories.get_categories(session["username"])
     return jsonify(cats)
 
 
 @app.route("/category/<category>", methods=["POST"])
-def new_category(category):
-    id, exists = categories.create_category(category)
+@authenticate()
+def new_category(session, category):
+    id, exists = categories.create_category(
+        username=session["username"],
+        name=category
+    )
 
     if exists:
         return jsonify({"id": id, "category": category, "message": "Category already exists"}), 409
