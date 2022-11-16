@@ -2,7 +2,6 @@ from flask import Flask, jsonify, request, render_template
 from wrappers import json_validator, authenticate
 from economy import EconomyManager
 from categories import Categories
-
 # Blueprints
 from auth_blueprint import authentication
 
